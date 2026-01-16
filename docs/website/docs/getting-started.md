@@ -13,9 +13,21 @@ This guide walks you through setting up growthctl and managing your first campai
 
 ## Installation
 
+We recommend using [pipx](https://pypa.github.io/pipx/) to install growthctl in an isolated environment:
+
+```bash
+pipx install growthctl
+```
+
+Or with standard pip:
+
 ```bash
 pip install growthctl
 ```
+
+### Development Setup
+
+If you want to contribute or modify the code, see our [Contributing Guide](https://github.com/growthctl/growthctl/blob/main/CONTRIBUTING.md).
 
 ## Configuration
 

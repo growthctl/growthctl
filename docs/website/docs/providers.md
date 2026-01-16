@@ -72,19 +72,19 @@ The mock provider simulates a remote state that you can plan and apply against.
 Providers implement a simple interface:
 
 ```python
-from providers.base import BaseProvider
+from providers.base import MarketingProvider
 
-class CustomProvider(BaseProvider):
+class CustomProvider(MarketingProvider):
     def get_campaign(self, campaign_id: str) -> dict | None:
         """Fetch campaign from remote."""
         pass
     
-    def create_campaign(self, campaign_data: dict) -> dict:
-        """Create a new campaign."""
+    def create_campaign(self, campaign_data: dict) -> str:
+        """Create a new campaign. Returns the new ID."""
         pass
     
-    def update_campaign(self, campaign_id: str, campaign_data: dict) -> dict:
-        """Update an existing campaign."""
+    def update_campaign(self, campaign_id: str, campaign_data: dict) -> bool:
+        """Update an existing campaign. Returns success status."""
         pass
 ```
 
