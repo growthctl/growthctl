@@ -1,14 +1,16 @@
+import os
+import sys
+from pathlib import Path
+from typing import Annotated
+
 import typer
 import yaml
-import sys
-import os
-from pathlib import Path
 from rich.console import Console
 from rich.panel import Panel
 
-from schema import MarketingPlan, Campaign, AdSet, Targeting
-from providers.mock import MockProvider
 from providers.meta import MetaProvider
+from providers.mock import MockProvider
+from schema import AdSet, Campaign, MarketingPlan, Targeting
 
 app = typer.Typer(help="growthctl - Marketing as Code CLI")
 console = Console()
@@ -32,7 +34,7 @@ def load_plan(file_path: Path) -> MarketingPlan:
         console.print(f"[red]Error: File {file_path} not found[/red]")
         sys.exit(1)
 
-    with open(file_path, "r") as f:
+    with open(file_path) as f:
         try:
             data = yaml.safe_load(f)
             return MarketingPlan(**data)
@@ -60,7 +62,9 @@ def diff_ad_set(local: dict, remote: dict) -> list:
 
 
 @app.command()
-def plan(file: Path = typer.Argument(..., help="Path to campaign.yaml")):
+def plan(
+    file: Annotated[Path, typer.Argument(help="Path to campaign.yaml")],
+):
     """
     Dry-run: Compare local configuration with remote state.
     """
@@ -101,8 +105,10 @@ def plan(file: Path = typer.Argument(..., help="Path to campaign.yaml")):
 
 @app.command()
 def apply(
-    file: Path = typer.Argument(..., help="Path to campaign.yaml"),
-    force: bool = typer.Option(False, "--force", "-f", help="Skip confirmation"),
+    file: Annotated[Path, typer.Argument(help="Path to campaign.yaml")],
+    force: Annotated[
+        bool, typer.Option("--force", "-f", help="Skip confirmation")
+    ] = False,
 ):
     """
     Apply changes to remote.
@@ -135,8 +141,12 @@ def apply(
 
 @app.command("import")
 def import_campaign(
-    campaign_keyword: str = typer.Argument(..., help="Campaign name or ID to import"),
-    output: Path = typer.Option("imported_campaign.yaml", help="Output file path"),
+    campaign_keyword: Annotated[
+        str, typer.Argument(help="Campaign name or ID to import")
+    ],
+    output: Annotated[Path, typer.Option(help="Output file path")] = Path(
+        "imported_campaign.yaml"
+    ),
 ):
     """
     Import existing campaign from remote and save as YAML.
@@ -158,7 +168,7 @@ def import_campaign(
 
     # 2. Convert Dict to Pydantic Models
     ad_sets = []
-    for ad_set_key, ad_set_data in remote_data["ad_sets"].items():
+    for _ad_set_key, ad_set_data in remote_data["ad_sets"].items():
         t = ad_set_data["targeting"]
         targeting = Targeting(
             locations=t.get("locations") or [],

@@ -1,10 +1,11 @@
 import os
-import sys
-from typing import Optional, Dict, Any, List
-from facebook_business.api import FacebookAdsApi
+from typing import Any
+
 from facebook_business.adobjects.adaccount import AdAccount
-from facebook_business.adobjects.campaign import Campaign as FbCampaign
 from facebook_business.adobjects.adset import AdSet as FbAdSet
+from facebook_business.adobjects.campaign import Campaign as FbCampaign
+from facebook_business.api import FacebookAdsApi
+
 from .base import MarketingProvider
 
 
@@ -23,9 +24,9 @@ class MetaProvider(MarketingProvider):
             if self.ad_account_id:
                 self.account = AdAccount(f"act_{self.ad_account_id}")
         except Exception as e:
-            raise ConnectionError(f"Failed to initialize Meta API: {e}")
+            raise ConnectionError(f"Failed to initialize Meta API: {e}") from e
 
-    def _get_campaign_by_name(self, name_id: str) -> Optional[FbCampaign]:
+    def _get_campaign_by_name(self, name_id: str) -> FbCampaign | None:
         if not hasattr(self, "account"):
             return None
         params = {
@@ -35,7 +36,7 @@ class MetaProvider(MarketingProvider):
         campaigns = self.account.get_campaigns(params=params)
         return campaigns[0] if campaigns else None
 
-    def get_campaign(self, campaign_id: str) -> Optional[Dict[str, Any]]:
+    def get_campaign(self, campaign_id: str) -> dict[str, Any] | None:
         if not hasattr(self, "account"):
             raise ValueError("META_AD_ACCOUNT_ID is required.")
 
@@ -97,11 +98,11 @@ class MetaProvider(MarketingProvider):
                 "status": fb_campaign[FbCampaign.Field.status],
                 "ad_sets": mapped_ad_sets,
             }
-        except Exception as e:
+        except Exception:
             # print(f"[Meta API Error] {e}")
             return None
 
-    def create_campaign(self, campaign_data: Dict[str, Any]) -> str:
+    def create_campaign(self, campaign_data: dict[str, Any]) -> str:
         print(f"   [Meta] Creating Campaign: {campaign_data['name']}...")
 
         # 1. Create Campaign
@@ -134,7 +135,7 @@ class MetaProvider(MarketingProvider):
 
         return campaign_id
 
-    def _create_ad_set(self, campaign_id: str, ad_set_data: Dict[str, Any]):
+    def _create_ad_set(self, campaign_id: str, ad_set_data: dict[str, Any]):
         print(f"   [Meta] Creating AdSet: {ad_set_data['name']}...")
 
         targeting = {
@@ -168,7 +169,7 @@ class MetaProvider(MarketingProvider):
         except Exception as e:
             print(f"      [Error] Failed to create ad set: {e}")
 
-    def update_campaign(self, campaign_id: str, campaign_data: Dict[str, Any]) -> bool:
+    def update_campaign(self, campaign_id: str, campaign_data: dict[str, Any]) -> bool:
         fb_campaign = self._get_campaign_by_name(campaign_id)
         if not fb_campaign:
             return False
@@ -201,7 +202,7 @@ class MetaProvider(MarketingProvider):
 
         return True
 
-    def _update_ad_set(self, remote_ad, data: Dict[str, Any]):
+    def _update_ad_set(self, remote_ad, data: dict[str, Any]):
         ad_id = remote_ad[FbAdSet.Field.id]
         print(f"   [Meta] Updating AdSet: {data['name']} ({ad_id})...")
 
@@ -209,7 +210,7 @@ class MetaProvider(MarketingProvider):
             remote_ad[FbAdSet.Field.daily_budget] = data["budget_daily"]
             remote_ad[FbAdSet.Field.status] = data["status"]
             remote_ad.remote_update()
-            print(f"      -> Updated successfully")
+            print("      -> Updated successfully")
         except Exception as e:
             print(f"      [Error] Failed to update: {e}")
 
@@ -220,6 +221,6 @@ class MetaProvider(MarketingProvider):
         try:
             remote_ad[FbAdSet.Field.status] = "ARCHIVED"
             remote_ad.remote_update()
-            print(f"      -> Archived successfully")
+            print("      -> Archived successfully")
         except Exception as e:
             print(f"      [Error] Failed to archive: {e}")

@@ -1,9 +1,11 @@
-from typing import Optional, Dict, Any
+from typing import Any
+
 from .base import MarketingProvider
+
 
 class MockProvider(MarketingProvider):
     def __init__(self):
-        # Simulate remote state: 
+        # Simulate remote state:
         # Campaign exists, but has different Ad Sets (Drift!)
         self._db = {
             "summer_promo_2026": {
@@ -16,33 +18,33 @@ class MockProvider(MarketingProvider):
                         "id": "summer_seoul_2030",
                         "name": "Seoul 20-30 Targeting",
                         "status": "PAUSED",
-                        "budget_daily": 15000, # Remote is cheaper (15k vs 30k)
+                        "budget_daily": 15000,  # Remote is cheaper (15k vs 30k)
                         "targeting": {
                             "locations": ["Seoul"],
                             "age_min": 20,
                             "age_max": 30,
-                            "interests": ["SaaS"]
-                        }
+                            "interests": ["SaaS"],
+                        },
                     }
                     # "summer_busan_broad" is missing in Remote!
-                }
+                },
             }
         }
 
-    def get_campaign(self, campaign_id: str) -> Optional[Dict[str, Any]]:
+    def get_campaign(self, campaign_id: str) -> dict[str, Any] | None:
         return self._db.get(campaign_id)
 
-    def create_campaign(self, campaign_data: Dict[str, Any]) -> str:
+    def create_campaign(self, campaign_data: dict[str, Any]) -> str:
         c_id = campaign_data.get("id")
         # Convert list of adsets to dict for mock storage
-        ad_sets_list = campaign_data.pop('ad_sets', [])
-        campaign_data['ad_sets'] = {a['id']: a for a in ad_sets_list}
-        
+        ad_sets_list = campaign_data.pop("ad_sets", [])
+        campaign_data["ad_sets"] = {a["id"]: a for a in ad_sets_list}
+
         self._db[c_id] = campaign_data
         print(f"[Remote] Created campaign: {c_id} with {len(ad_sets_list)} ad sets")
         return c_id
 
-    def update_campaign(self, campaign_id: str, campaign_data: Dict[str, Any]) -> bool:
+    def update_campaign(self, campaign_id: str, campaign_data: dict[str, Any]) -> bool:
         if campaign_id in self._db:
             # Simple mock update
             self._db[campaign_id].update(campaign_data)
