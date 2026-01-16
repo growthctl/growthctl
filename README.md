@@ -1,8 +1,21 @@
 # growthctl
 
-Marketing as Code - Manage ad campaigns like infrastructure.
+Marketing as Code CLI for managing ad campaigns declaratively using YAML and Git.
+
+- Plan and apply campaign changes safely with Terraform-style dry runs
+- Version control your ad strategy and collaborate using standard Git workflows
+- Manage Meta (Facebook/Instagram) ads with built-in provider support
+- Test safely with a local mock mode before touching live ad accounts
 
 ## Installation
+
+Install using pipx (recommended):
+
+```bash
+pipx install growthctl
+```
+
+Or using pip:
 
 ```bash
 pip install growthctl
@@ -10,8 +23,9 @@ pip install growthctl
 
 ## Quick Start
 
+Define your campaign in `campaign.yaml`:
+
 ```yaml
-# campaign.yaml
 version: "1.0"
 campaigns:
   - id: summer-sale
@@ -29,25 +43,17 @@ campaigns:
           age_max: 54
 ```
 
+Preview and apply changes:
+
 ```bash
 # Preview changes
 growthctl plan campaign.yaml
 
 # Apply to live
 growthctl apply campaign.yaml
-
-# Import existing campaign
-growthctl import "My Campaign" --output my-campaign.yaml
 ```
 
-## Configuration
+## Links
 
-Set your Meta access token:
-
-```bash
-export META_ACCESS_TOKEN="your-token"
-```
-
-## License
-
-MIT
+- [Contribution Guide](CONTRIBUTING.md)
+- [License](LICENSE)
