@@ -8,9 +8,9 @@ import yaml
 from rich.console import Console
 from rich.panel import Panel
 
-from providers.meta import MetaProvider
-from providers.mock import MockProvider
-from schema import AdSet, Campaign, MarketingPlan, Targeting
+from growthctl.providers.meta import MetaProvider
+from growthctl.providers.mock import MockProvider
+from growthctl.schema import AdSet, Campaign, MarketingPlan, Targeting
 
 app = typer.Typer(help="growthctl - Marketing as Code CLI")
 console = Console()
@@ -85,22 +85,45 @@ def plan(
         console.print(f"[bold]Checking Campaign:[/bold] {campaign.name}")
 
         remote_ad_sets = remote_campaign.get("ad_sets", {})
-        local_ad_sets = {a.name: a for a in campaign.ad_sets}
+        # Build lookup maps for matching
+        # 1. Match by ID (Preferred, stable)
+        remote_by_id = dict(remote_ad_sets.items())
+        # 2. Match by Name (Fallback, ambiguous if duplicates)
+        remote_by_name = {v["name"]: v for v in remote_ad_sets.values()}
 
-        for ad_set_name, ad_set in local_ad_sets.items():
-            if ad_set_name not in remote_ad_sets:
+        # Track which remote ad sets have been matched to detect deletions
+        matched_remote_ids = set()
+
+        for ad_set in campaign.ad_sets:
+            # Try to find matching remote ad set
+            remote_ad_set = None
+
+            # Strategy 1: Match by ID
+            if ad_set.id in remote_by_id:
+                remote_ad_set = remote_by_id[ad_set.id]
+            # Strategy 2: Match by Name (if ID match failed)
+            elif ad_set.name in remote_by_name:
+                remote_ad_set = remote_by_name[ad_set.name]
+
+            if not remote_ad_set:
                 console.print(f"  [green]+ Create AdSet:[/green] {ad_set.name} (New)")
             else:
-                remote_ad_set = remote_ad_sets[ad_set_name]
+                matched_remote_ids.add(
+                    remote_ad_set["real_id"]
+                )  # Track matched real ID
+                # If we matched by name but IDs differ, we might want to note it, but diff logic handles content
                 changes = diff_ad_set(ad_set.model_dump(), remote_ad_set)
                 if changes:
                     console.print(f"  [yellow]~ Update AdSet:[/yellow] {ad_set.name}")
                     for change in changes:
                         console.print(f"    {change}")
 
-        for remote_name in remote_ad_sets:
-            if remote_name not in local_ad_sets:
-                console.print(f"  [red]- Delete (Archive) AdSet:[/red] {remote_name}")
+        # Detect deletions (Remote ad sets that were not matched by any local ad set)
+        for _remote_id, remote_ad in remote_ad_sets.items():
+            if remote_ad["real_id"] not in matched_remote_ids:
+                console.print(
+                    f"  [red]- Delete (Archive) AdSet:[/red] {remote_ad['name']}"
+                )
 
 
 @app.command()
@@ -142,8 +165,8 @@ def apply(
 @app.command("import")
 def import_campaign(
     campaign_keyword: Annotated[
-        str, typer.Argument(help="Campaign name or ID to import")
-    ],
+        str | None, typer.Argument(help="Campaign name or ID to import")
+    ] = None,
     output: Annotated[Path, typer.Option(help="Output file path")] = Path(
         "imported_campaign.yaml"
     ),
@@ -151,57 +174,81 @@ def import_campaign(
     """
     Import existing campaign from remote and save as YAML.
     """
-    console.print(
-        Panel(f"Importing campaign: [bold]{campaign_keyword}[/bold]", style="magenta")
-    )
+    if campaign_keyword:
+        console.print(
+            Panel(
+                f"Importing campaign: [bold]{campaign_keyword}[/bold]", style="magenta"
+            )
+        )
+    else:
+        console.print(Panel("Importing [bold]ALL[/bold] campaigns", style="magenta"))
 
     # 1. Fetch from Provider
-    remote_data = provider.get_campaign(campaign_keyword)
-
-    if not remote_data:
-        console.print(f"[red]Campaign not found matching: {campaign_keyword}[/red]")
-        sys.exit(1)
-
-    console.print(
-        f"[green]Found campaign:[/green] {remote_data['name']} (Real ID: {remote_data['real_id']})"
-    )
+    if campaign_keyword:
+        remote_data = provider.get_campaign(campaign_keyword)
+        if not remote_data:
+            console.print(f"[red]Campaign not found matching: {campaign_keyword}[/red]")
+            sys.exit(1)
+        campaigns_data = [remote_data]
+        console.print(
+            f"[green]Found campaign:[/green] {remote_data['name']} (Real ID: {remote_data.get('real_id', remote_data.get('id'))})"
+        )
+    else:
+        campaigns_data = provider.get_all_campaigns()
+        if not campaigns_data:
+            console.print("[red]No campaigns found.[/red]")
+            sys.exit(1)
+        console.print(f"[green]Found {len(campaigns_data)} campaigns.[/green]")
+        for c in campaigns_data:
+            account_info = ""
+            if c.get("account_name"):
+                account_info = f" [dim]({c['account_name']})[/dim]"
+            console.print(f"  - {c['name']}{account_info}")
 
     # 2. Convert Dict to Pydantic Models
-    ad_sets = []
-    for _ad_set_key, ad_set_data in remote_data["ad_sets"].items():
-        t = ad_set_data["targeting"]
-        targeting = Targeting(
-            locations=t.get("locations") or [],
-            age_min=t.get("age_min", 18),
-            age_max=t.get("age_max", 65),
-            interests=t.get("interests") or [],
+    campaigns = []
+
+    for remote_data in campaigns_data:
+        ad_sets = []
+        # Track used IDs to ensure uniqueness in YAML
+        seen_ids = set()
+
+        for _ad_set_key, ad_set_data in remote_data["ad_sets"].items():
+            t = ad_set_data["targeting"]
+            targeting = Targeting(
+                locations=t.get("locations") or [],
+                age_min=t.get("age_min", 18),
+                age_max=t.get("age_max", 65),
+                interests=t.get("interests") or [],
+            )
+
+            # Use Real ID as YAML ID to ensure uniqueness and stability
+            yaml_id = ad_set_data.get("real_id", ad_set_data.get("id"))
+
+            # If somehow real_id is missing or duplicate (unlikely for Meta), fallback
+            if yaml_id in seen_ids:
+                yaml_id = f"{ad_set_data['name']}_{_ad_set_key}"
+            seen_ids.add(yaml_id)
+
+            ad_set = AdSet(
+                id=yaml_id,
+                name=ad_set_data["name"],
+                status=ad_set_data["status"],
+                budget_daily=ad_set_data["budget_daily"],
+                targeting=targeting,
+            )
+            ad_sets.append(ad_set)
+
+        campaign = Campaign(
+            id=remote_data["real_id"],
+            name=remote_data["name"],
+            objective=remote_data["objective"],
+            status=remote_data["status"],
+            ad_sets=ad_sets,
         )
+        campaigns.append(campaign)
 
-        ad_set = AdSet(
-            id=ad_set_data["name"],
-            name=ad_set_data["name"],
-            status=ad_set_data["status"]
-            if ad_set_data["status"] in ["ACTIVE", "PAUSED"]
-            else "PAUSED",
-            budget_daily=ad_set_data["budget_daily"],
-            targeting=targeting,
-        )
-        ad_sets.append(ad_set)
-
-    campaign = Campaign(
-        id=remote_data["name"],
-        name=remote_data["name"],
-        objective=remote_data["objective"]
-        if remote_data["objective"]
-        in ["OUTCOME_SALES", "OUTCOME_TRAFFIC", "OUTCOME_AWARENESS"]
-        else "OUTCOME_SALES",
-        status=remote_data["status"]
-        if remote_data["status"] in ["ACTIVE", "PAUSED"]
-        else "PAUSED",
-        ad_sets=ad_sets,
-    )
-
-    plan = MarketingPlan(version="1.0", campaigns=[campaign])
+    plan = MarketingPlan(version="1.0", campaigns=campaigns)
 
     # 3. Dump to YAML
     with open(output, "w") as f:

@@ -1,10 +1,13 @@
 from typing import Any
 
+from rich.console import Console
+
 from .base import MarketingProvider
 
 
 class MockProvider(MarketingProvider):
     def __init__(self):
+        self.console = Console()
         # Simulate remote state:
         # Campaign exists, but has different Ad Sets (Drift!)
         self._db = {
@@ -34,6 +37,9 @@ class MockProvider(MarketingProvider):
     def get_campaign(self, campaign_id: str) -> dict[str, Any] | None:
         return self._db.get(campaign_id)
 
+    def get_all_campaigns(self) -> list[dict[str, Any]]:
+        return list(self._db.values())
+
     def create_campaign(self, campaign_data: dict[str, Any]) -> str:
         c_id = campaign_data.get("id")
         # Convert list of adsets to dict for mock storage
@@ -41,13 +47,17 @@ class MockProvider(MarketingProvider):
         campaign_data["ad_sets"] = {a["id"]: a for a in ad_sets_list}
 
         self._db[c_id] = campaign_data
-        print(f"[Remote] Created campaign: {c_id} with {len(ad_sets_list)} ad sets")
+        self.console.print(
+            f"[bold magenta][Remote][/bold magenta] Created campaign: {c_id} with {len(ad_sets_list)} ad sets"
+        )
         return c_id
 
     def update_campaign(self, campaign_id: str, campaign_data: dict[str, Any]) -> bool:
         if campaign_id in self._db:
             # Simple mock update
             self._db[campaign_id].update(campaign_data)
-            print(f"[Remote] Updated campaign: {campaign_id}")
+            self.console.print(
+                f"[bold magenta][Remote][/bold magenta] Updated campaign: {campaign_id}"
+            )
             return True
         return False

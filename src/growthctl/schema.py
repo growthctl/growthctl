@@ -1,6 +1,4 @@
-from typing import Literal
-
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field
 
 
 class Targeting(BaseModel):
@@ -13,22 +11,20 @@ class Targeting(BaseModel):
 class AdSet(BaseModel):
     id: str = Field(..., description="Unique identifier for the ad set")
     name: str
-    status: Literal["ACTIVE", "PAUSED"] = "PAUSED"
-    budget_daily: int = Field(..., gt=0)
+    status: str = "PAUSED"
+    budget_daily: int = Field(
+        ...,
+        ge=0,
+        description="Daily budget in account's smallest currency unit (e.g., cents for USD, won for KRW)",
+    )
     targeting: Targeting
-
-    @validator("budget_daily")
-    def check_min_budget(cls, v):
-        if v < 1000:
-            raise ValueError("Daily budget must be at least 1,000 KRW")
-        return v
 
 
 class Campaign(BaseModel):
     id: str = Field(..., description="Unique identifier for the campaign")
     name: str
-    objective: Literal["OUTCOME_SALES", "OUTCOME_TRAFFIC", "OUTCOME_AWARENESS"]
-    status: Literal["ACTIVE", "PAUSED"] = "PAUSED"
+    objective: str
+    status: str = "PAUSED"
     ad_sets: list[AdSet] = Field(default_factory=list)
 
 

@@ -9,6 +9,11 @@ class MarketingProvider(ABC):
         pass
 
     @abstractmethod
+    def get_all_campaigns(self) -> list[dict[str, Any]]:
+        """Fetch all campaigns from the remote platform."""
+        pass
+
+    @abstractmethod
     def create_campaign(self, campaign_data: dict[str, Any]) -> str:
         """Create a new campaign."""
         pass
