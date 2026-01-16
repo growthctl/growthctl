@@ -6,7 +6,10 @@ from facebook_business.adobjects.adset import AdSet as FbAdSet
 from facebook_business.adobjects.campaign import Campaign as FbCampaign
 from facebook_business.adobjects.user import User
 from facebook_business.api import FacebookAdsApi
+from facebook_business.exceptions import FacebookRequestError
 from rich.console import Console
+
+from growthctl.utils import match_ad_set
 
 from .base import MarketingProvider
 
@@ -45,8 +48,7 @@ class MetaProvider(MarketingProvider):
                 # We need to verify this campaign belongs to the account if account is specified
                 # But remote_read on ID might just work if we have access.
                 return [c]
-            except Exception:
-                # Fallback to search if ID fetch fails
+            except FacebookRequestError:
                 pass
 
         params = {
@@ -75,8 +77,8 @@ class MetaProvider(MarketingProvider):
             my_accounts = me.get_ad_accounts(
                 fields=[AdAccount.Field.name, AdAccount.Field.account_id]
             )
-        except Exception:
-            # self.console.print(f"   [Warning] Could not list ad accounts: {e}")
+        except FacebookRequestError as e:
+            self.console.print(f"[dim]Warning: Could not list ad accounts: {e}[/dim]")
             return None
 
         found_accounts = []
@@ -156,7 +158,7 @@ class MetaProvider(MarketingProvider):
                 "status": fb_campaign[FbCampaign.Field.status],
                 "ad_sets": mapped_ad_sets,
             }
-        except Exception as e:
+        except FacebookRequestError as e:
             self.console.print(
                 f"[Meta API Error] Failed to process campaign {fb_campaign.get(FbCampaign.Field.id, 'unknown')}: {e}"
             )
@@ -182,9 +184,9 @@ class MetaProvider(MarketingProvider):
                     return result
 
             return None
-        except Exception as e:
-            if isinstance(e, ValueError):
-                raise e
+        except ValueError:
+            raise
+        except FacebookRequestError:
             return None
 
     def _find_campaign_in_account(
@@ -213,7 +215,9 @@ class MetaProvider(MarketingProvider):
                 fb_campaign = candidates[0]
 
             return self._process_campaign(fb_campaign)
-        except Exception:
+        except ValueError:
+            raise
+        except FacebookRequestError:
             return None
 
     def get_all_campaigns(self) -> list[dict[str, Any]]:
@@ -244,9 +248,9 @@ class MetaProvider(MarketingProvider):
                 results.extend(campaigns)
 
             return results
-        except Exception as e:
-            if isinstance(e, ValueError):
-                raise
+        except ValueError:
+            raise
+        except FacebookRequestError as e:
             raise ValueError(f"Failed to fetch ad accounts: {e}") from e
 
     def _get_campaigns_from_account(
@@ -298,9 +302,9 @@ class MetaProvider(MarketingProvider):
             self.console.print(
                 f"   [bold blue][Meta][/bold blue] Campaign Created! ID: {campaign_id}"
             )
-        except Exception as e:
+        except FacebookRequestError as e:
             self.console.print(f"[red][Error][/red] Failed to create campaign: {e}")
-            raise e
+            raise
 
         # 2. Create Ad Sets
         ad_sets_list = campaign_data.get("ad_sets", [])
@@ -328,8 +332,8 @@ class MetaProvider(MarketingProvider):
 
         locs = ad_set_data["targeting"]["locations"]
         if locs:
-            # Safe default for MVP
-            targeting["geo_locations"] = {"countries": ["KR"]}
+            # Use actual locations from YAML config
+            targeting["geo_locations"] = {"countries": locs}
 
         params = {
             FbAdSet.Field.name: ad_set_data["name"],
@@ -347,7 +351,7 @@ class MetaProvider(MarketingProvider):
             self.console.print(
                 f"      -> Created AdSet ID: {created_ad_set[FbAdSet.Field.id]}"
             )
-        except Exception as e:
+        except FacebookRequestError as e:
             self.console.print(f"      [red][Error][/red] Failed to create ad set: {e}")
 
     def update_campaign(self, campaign_id: str, campaign_data: dict[str, Any]) -> bool:
@@ -376,11 +380,7 @@ class MetaProvider(MarketingProvider):
             local_id = data["id"]
             local_name = data["name"]
 
-            remote_ad = None
-            if local_id in remote_by_id:
-                remote_ad = remote_by_id[local_id]
-            elif local_name in remote_by_name:
-                remote_ad = remote_by_name[local_name]
+            remote_ad = match_ad_set(local_id, local_name, remote_by_id, remote_by_name)
 
             if not remote_ad:
                 self._create_ad_set(real_c_id, data)
@@ -405,7 +405,7 @@ class MetaProvider(MarketingProvider):
             remote_ad[FbAdSet.Field.status] = data["status"]
             remote_ad.remote_update()
             self.console.print("      -> Updated successfully")
-        except Exception as e:
+        except FacebookRequestError as e:
             self.console.print(f"      [red][Error][/red] Failed to update: {e}")
 
     def _archive_ad_set(self, remote_ad):
@@ -418,5 +418,5 @@ class MetaProvider(MarketingProvider):
             remote_ad[FbAdSet.Field.status] = "ARCHIVED"
             remote_ad.remote_update()
             self.console.print("      -> Archived successfully")
-        except Exception as e:
+        except FacebookRequestError as e:
             self.console.print(f"      [red][Error][/red] Failed to archive: {e}")

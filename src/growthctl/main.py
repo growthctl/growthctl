@@ -5,12 +5,14 @@ from typing import Annotated
 
 import typer
 import yaml
+from pydantic import ValidationError
 from rich.console import Console
 from rich.panel import Panel
 
 from growthctl.providers.meta import MetaProvider
 from growthctl.providers.mock import MockProvider
 from growthctl.schema import AdSet, Campaign, MarketingPlan, Targeting
+from growthctl.utils import build_ad_set_lookup, match_ad_set
 
 app = typer.Typer(help="growthctl - Marketing as Code CLI")
 console = Console()
@@ -22,7 +24,7 @@ try:
         console.print("[bold green]Connected to Meta Marketing API[/bold green]")
     else:
         raise ValueError("No token")
-except Exception:
+except (ValueError, ConnectionError):
     console.print(
         "[dim]Meta credentials not found (META_ACCESS_TOKEN). Using Mock Provider.[/dim]"
     )
@@ -38,7 +40,7 @@ def load_plan(file_path: Path) -> MarketingPlan:
         try:
             data = yaml.safe_load(f)
             return MarketingPlan(**data)
-        except Exception as e:
+        except (yaml.YAMLError, ValidationError) as e:
             console.print(f"[red]Validation Error:[/red] {e}")
             sys.exit(1)
 
@@ -85,25 +87,14 @@ def plan(
         console.print(f"[bold]Checking Campaign:[/bold] {campaign.name}")
 
         remote_ad_sets = remote_campaign.get("ad_sets", {})
-        # Build lookup maps for matching
-        # 1. Match by ID (Preferred, stable)
-        remote_by_id = dict(remote_ad_sets.items())
-        # 2. Match by Name (Fallback, ambiguous if duplicates)
-        remote_by_name = {v["name"]: v for v in remote_ad_sets.values()}
+        remote_by_id, remote_by_name = build_ad_set_lookup(remote_ad_sets)
 
-        # Track which remote ad sets have been matched to detect deletions
         matched_remote_ids = set()
 
         for ad_set in campaign.ad_sets:
-            # Try to find matching remote ad set
-            remote_ad_set = None
-
-            # Strategy 1: Match by ID
-            if ad_set.id in remote_by_id:
-                remote_ad_set = remote_by_id[ad_set.id]
-            # Strategy 2: Match by Name (if ID match failed)
-            elif ad_set.name in remote_by_name:
-                remote_ad_set = remote_by_name[ad_set.name]
+            remote_ad_set = match_ad_set(
+                ad_set.id, ad_set.name, remote_by_id, remote_by_name
+            )
 
             if not remote_ad_set:
                 console.print(f"  [green]+ Create AdSet:[/green] {ad_set.name} (New)")
