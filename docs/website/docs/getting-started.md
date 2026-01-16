@@ -13,7 +13,13 @@ This guide walks you through setting up growthctl and managing your first campai
 
 ## Installation
 
-We recommend using [pipx](https://pypa.github.io/pipx/) to install growthctl in an isolated environment:
+We recommend using [uv](https://github.com/astral-sh/uv) to install growthctl:
+
+```bash
+uv tool install growthctl
+```
+
+Alternatively, you can use [pipx](https://pypa.github.io/pipx/):
 
 ```bash
 pipx install growthctl

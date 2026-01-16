@@ -17,7 +17,13 @@ Plan and apply campaign changes safely with Terraform-style dry runs. Version co
 
 ## Install
 
-Install using pipx (recommended):
+Install using uv (recommended):
+
+```bash
+uv tool install growthctl
+```
+
+Install using pipx:
 
 ```bash
 pipx install growthctl
