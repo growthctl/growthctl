@@ -28,7 +28,4 @@ jobs:
       - name: Publish to PyPI
         run: uv publish
         env:
-          # By default, this uses Trusted Publishing (OIDC).
-          # If you prefer a token, configure the PYPI_TOKEN secret and uncomment:
-          # UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}
-          pass
+          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}
