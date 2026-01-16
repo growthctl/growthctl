@@ -3,8 +3,11 @@
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 [![PyPI version](https://badge.fury.io/py/growthctl.svg)](https://badge.fury.io/py/growthctl)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 
 > Marketing as Code CLI for managing ad campaigns declaratively using YAML and Git.
+>
+> **Note**: This project is currently in active development. APIs and configuration schemas are subject to change.
 
 Plan and apply campaign changes safely with Terraform-style dry runs. Version control your ad strategy and collaborate using standard Git workflows. Manage Meta (Facebook/Instagram) ads with built-in provider support.
 

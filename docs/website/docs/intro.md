@@ -6,8 +6,13 @@ sidebar_position: 1
 
 [![PyPI version](https://badge.fury.io/py/growthctl.svg)](https://badge.fury.io/py/growthctl)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 
 **growthctl** is a CLI tool that brings Infrastructure-as-Code principles to marketing campaign management. Define your ad campaigns in YAML, version control them, and deploy with confidence.
+
+:::info
+This project is currently in **active development**. APIs and configuration schemas are subject to change.
+:::
 
 ## Why growthctl?
 
