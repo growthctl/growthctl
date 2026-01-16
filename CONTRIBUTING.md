@@ -54,9 +54,17 @@ npm install
 npm start
 ```
 
-## Pull Requests
+## Release Process
 
-1. Fork the repo and create your branch from `main`.
-2. Ensure `uv run pre-commit run --all-files` passes.
-3. If you changed documentation, ensure it builds locally.
-4. Open a PR!
+To release a new version of `growthctl` to PyPI:
+
+1. **Bump Version**: Update the version number in `pyproject.toml`.
+2. **Update Lockfile**: Run `uv lock` to synchronize the lockfile.
+3. **Commit Changes**: Commit the version bump (e.g., `chore: bump version to 0.1.1`).
+4. **Push & Tag**:
+   ```bash
+   git push
+   git tag v0.1.1
+   git push origin v0.1.1
+   ```
+   *Note: The GitHub Action will only trigger on tags matching `v*` (e.g., `v0.1.1`). It will NOT trigger on branch pushes.*
