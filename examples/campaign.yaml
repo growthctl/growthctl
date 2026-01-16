@@ -1,0 +1,27 @@
+version: "1.0"
+campaigns:
+  - id: "2026 Summer Sale"
+    name: "2026 Summer Sale"
+    objective: "OUTCOME_SALES"
+    status: "PAUSED"
+    ad_sets:
+      - id: "summer_seoul_2030"
+        name: "Seoul 20-30 Targeting"
+        status: "PAUSED"
+        budget_daily: 30000
+        targeting:
+          locations: 
+            - "Seoul"
+          age_min: 20
+          age_max: 30
+          interests: ["SaaS", "Startup"]
+      - id: "summer_busan_broad"
+        name: "Busan Broad Targeting"
+        status: "PAUSED"
+        budget_daily: 20000
+        targeting:
+          locations: 
+            - "Busan"
+          age_min: 18
+          age_max: 65
+          interests: []
