@@ -1,13 +1,21 @@
 # growthctl
 
-Marketing as Code CLI for managing ad campaigns declaratively using YAML and Git.
+[![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
+[![PyPI version](https://badge.fury.io/py/growthctl.svg)](https://badge.fury.io/py/growthctl)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-- Plan and apply campaign changes safely with Terraform-style dry runs
-- Version control your ad strategy and collaborate using standard Git workflows
-- Manage Meta (Facebook/Instagram) ads with built-in provider support
-- Test safely with a local mock mode before touching live ad accounts
+> Marketing as Code CLI for managing ad campaigns declaratively using YAML and Git.
 
-## Installation
+Plan and apply campaign changes safely with Terraform-style dry runs. Version control your ad strategy and collaborate using standard Git workflows. Manage Meta (Facebook/Instagram) ads with built-in provider support.
+
+## Table of Contents
+
+- [Install](#install)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Install
 
 Install using pipx (recommended):
 
@@ -21,7 +29,7 @@ Or using pip:
 pip install growthctl
 ```
 
-## Quick Start
+## Usage
 
 Define your campaign in `campaign.yaml`:
 
@@ -53,7 +61,10 @@ growthctl plan campaign.yaml
 growthctl apply campaign.yaml
 ```
 
-## Links
+## Contributing
 
-- [Contribution Guide](CONTRIBUTING.md)
-- [License](LICENSE)
+See [the contributing file](CONTRIBUTING.md) for details.
+
+## License
+
+[MIT](LICENSE) © growthctl contributors
