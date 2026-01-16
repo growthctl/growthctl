@@ -58,7 +58,7 @@ campaigns:
       - id: us-audience
         name: US Audience
         status: ACTIVE
-        budget_daily: 50.00
+        budget_daily: 5000
         targeting:
           locations: ["US"]
           age_min: 25

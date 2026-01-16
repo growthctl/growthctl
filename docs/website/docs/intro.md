@@ -47,7 +47,7 @@ campaigns:
       - id: us-audience
         name: US Audience
         status: ACTIVE
-        budget_daily: 50.00
+        budget_daily: 5000
         targeting:
           locations: ["US"]
           age_min: 25
@@ -65,17 +65,25 @@ growthctl apply campaign.yaml
 
 ## Installation
 
+Install using [uv](https://github.com/astral-sh/uv) (recommended):
+
+```bash
+uv tool install growthctl
+```
+
+Install using [pipx](https://pypa.github.io/pipx/):
+
+```bash
+pipx install growthctl
+```
+
+Or using pip:
+
 ```bash
 pip install growthctl
 ```
 
-Or install from source:
-
-```bash
-git clone https://github.com/growthctl/growthctl.git
-cd growthctl
-pip install -e .
-```
+For development setup, see our [Contributing Guide](https://github.com/growthctl/growthctl/blob/main/CONTRIBUTING.md).
 
 ## Next Steps
 

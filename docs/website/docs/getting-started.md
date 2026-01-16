@@ -73,7 +73,7 @@ campaigns:
       - id: test-audience
         name: Test Audience
         status: PAUSED
-        budget_daily: 10.00
+        budget_daily: 1000
         targeting:
           locations: ["US"]
           age_min: 18

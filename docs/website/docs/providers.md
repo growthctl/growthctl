@@ -31,8 +31,20 @@ growthctl supports multiple ad platforms through a provider system.
 
 3. **Configure growthctl**
    ```bash
+   # Required
    export META_ACCESS_TOKEN="your-access-token"
+   
+   # Required for creating new campaigns
+   export META_AD_ACCOUNT_ID="your-ad-account-id"
+   
+   # Optional
+   export META_APP_ID="your-app-id"
+   export META_APP_SECRET="your-app-secret"
    ```
+
+:::tip
+If `META_AD_ACCOUNT_ID` is not set, growthctl will search across all ad accounts you have access to. For `import`, this allows importing from any account. For `create` operations, you must set it explicitly.
+:::
 
 ### Permissions Required
 
@@ -72,11 +84,15 @@ The mock provider simulates a remote state that you can plan and apply against.
 Providers implement a simple interface:
 
 ```python
-from providers.base import MarketingProvider
+from growthctl.providers.base import MarketingProvider
 
 class CustomProvider(MarketingProvider):
     def get_campaign(self, campaign_id: str) -> dict | None:
         """Fetch campaign from remote."""
+        pass
+    
+    def get_all_campaigns(self) -> list[dict]:
+        """Fetch all campaigns from remote."""
         pass
     
     def create_campaign(self, campaign_data: dict) -> str:
@@ -88,4 +104,4 @@ class CustomProvider(MarketingProvider):
         pass
 ```
 
-See `providers/meta.py` for a complete implementation example.
+See `src/growthctl/providers/meta.py` for a complete implementation example.

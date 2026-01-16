@@ -14,18 +14,27 @@ campaigns:
   - id: string           # Unique identifier
     name: string         # Display name
     objective: string    # Campaign objective
-    status: string       # ACTIVE or PAUSED
+    status: string       # ACTIVE or PAUSED (default: PAUSED)
     ad_sets:
       - id: string
         name: string
-        status: string
-        budget_daily: number
+        status: string   # ACTIVE or PAUSED (default: PAUSED)
+        budget_daily: integer  # Daily budget in account's smallest currency unit
         targeting:
           locations: [string]
           age_min: number
           age_max: number
           interests: [string]
 ```
+
+:::info Currency Units
+`budget_daily` uses the account's smallest currency unit:
+- **USD**: cents (e.g., `5000` = $50.00)
+- **KRW**: won (e.g., `50000` = ₩50,000)
+- **EUR**: cents (e.g., `5000` = €50.00)
+
+The Meta API enforces minimum budget requirements per currency.
+:::
 
 ## Fields Reference
 
@@ -38,13 +47,13 @@ campaigns:
 
 ### Campaign
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `id` | string | Yes | Unique identifier for the campaign |
-| `name` | string | Yes | Display name |
-| `objective` | string | Yes | Campaign objective |
-| `status` | string | Yes | `ACTIVE` or `PAUSED` |
-| `ad_sets` | array | Yes | List of ad sets |
+| Field | Type | Required | Default | Description |
+|-------|------|----------|---------|-------------|
+| `id` | string | Yes | - | Unique identifier for the campaign |
+| `name` | string | Yes | - | Display name |
+| `objective` | string | Yes | - | Campaign objective |
+| `status` | string | No | `PAUSED` | `ACTIVE` or `PAUSED` |
+| `ad_sets` | array | Yes | - | List of ad sets |
 
 **Objectives:**
 - `OUTCOME_SALES` - Conversions and sales
@@ -53,13 +62,13 @@ campaigns:
 
 ### AdSet
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `id` | string | Yes | Unique identifier |
-| `name` | string | Yes | Display name |
-| `status` | string | Yes | `ACTIVE` or `PAUSED` |
-| `budget_daily` | number | Yes | Daily budget in account currency |
-| `targeting` | object | Yes | Targeting configuration |
+| Field | Type | Required | Default | Description |
+|-------|------|----------|---------|-------------|
+| `id` | string | Yes | - | Unique identifier |
+| `name` | string | Yes | - | Display name |
+| `status` | string | No | `PAUSED` | `ACTIVE` or `PAUSED` |
+| `budget_daily` | integer | Yes | - | Daily budget in account's smallest currency unit |
+| `targeting` | object | Yes | - | Targeting configuration |
 
 ### Targeting
 
@@ -83,7 +92,7 @@ campaigns:
       - id: us-millennials
         name: US Millennials
         status: ACTIVE
-        budget_daily: 100.00
+        budget_daily: 10000
         targeting:
           locations: ["US"]
           age_min: 25
@@ -93,7 +102,7 @@ campaigns:
       - id: canada-broad
         name: Canada Broad
         status: ACTIVE
-        budget_daily: 50.00
+        budget_daily: 5000
         targeting:
           locations: ["CA"]
           age_min: 18
@@ -108,7 +117,7 @@ campaigns:
       - id: global-reach
         name: Global Reach
         status: PAUSED
-        budget_daily: 200.00
+        budget_daily: 20000
         targeting:
           locations: ["US", "CA", "GB", "AU"]
           age_min: 18
@@ -130,4 +139,7 @@ Validation Error: value is not a valid enumeration member: 'active'
 # Invalid objective
 Validation Error: value is not a valid enumeration member: 'SALES'
 # Fix: Use 'OUTCOME_SALES'
+
+# Negative budget
+Validation Error: ensure this value is greater than or equal to 0
 ```

@@ -77,20 +77,23 @@ The `apply` command makes live changes to your ad account. Always run `plan` fir
 
 ### import
 
-Import existing campaign from remote and save as YAML.
+Import existing campaign(s) from remote and save as YAML.
 
 ```bash
-growthctl import <campaign_keyword> [--output <file>]
+growthctl import [campaign_keyword] [--output <file>]
 ```
 
 **Arguments:**
-- `campaign_keyword` - Campaign name or ID to search for (required)
+- `campaign_keyword` - Campaign name or ID to search for (optional). If omitted, imports **all campaigns**.
 
 **Options:**
 - `--output` - Output file path (default: `imported_campaign.yaml`)
 
 **Example:**
 ```bash
+# Import ALL campaigns
+growthctl import --output all-campaigns.yaml
+
 # Import by name
 growthctl import "Summer Sale" --output summer-sale.yaml
 
@@ -102,7 +105,10 @@ growthctl import "123456789" --output campaign.yaml
 
 | Variable | Description | Required |
 |----------|-------------|----------|
-| `META_ACCESS_TOKEN` | Meta Marketing API access token | For Meta provider |
+| `META_ACCESS_TOKEN` | Meta Marketing API access token | Yes (for Meta provider) |
+| `META_AD_ACCOUNT_ID` | Meta Ad Account ID (without `act_` prefix) | Required for `create` operations |
+| `META_APP_ID` | Meta App ID | Optional |
+| `META_APP_SECRET` | Meta App Secret | Optional |
 
 ## Exit Codes
 
