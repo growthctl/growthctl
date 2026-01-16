@@ -82,3 +82,7 @@ See [the contributing file](CONTRIBUTING.md) for details.
 ## License
 
 [MIT](LICENSE) © growthctl contributors
+
+## Contact
+
+For questions or feedback, please reach out to [growthctl@gmail.com](mailto:growthctl@gmail.com).

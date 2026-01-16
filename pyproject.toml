@@ -1,6 +1,6 @@
 [project]
 name = "growthctl"
-version = "0.1.0"
+version = "0.1.1"
 description = "Marketing as Code - Manage ad campaigns like infrastructure"
 readme = "README.md"
 requires-python = ">=3.10"
