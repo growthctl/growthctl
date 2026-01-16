@@ -33,3 +33,6 @@ docs/website/.docusaurus/
 # Misc
 *.log
 .cache/
+
+# Imported campaigns
+imported_campaign.*
