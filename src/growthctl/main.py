@@ -47,6 +47,11 @@ def load_plan(file_path: Path) -> MarketingPlan:
 
 def diff_ad_set(local: dict, remote: dict) -> list:
     changes = []
+    if local["status"] != remote["status"]:
+        changes.append(
+            f"  [cyan]status[/cyan]: {remote['status']} -> [green]{local['status']}[/green]"
+        )
+
     if local["budget_daily"] != remote["budget_daily"]:
         changes.append(
             f"  [cyan]budget[/cyan]: {remote['budget_daily']} -> [green]{local['budget_daily']}[/green]"
@@ -85,6 +90,11 @@ def plan(
             continue
 
         console.print(f"[bold]Checking Campaign:[/bold] {campaign.name}")
+
+        if remote_campaign["status"] != campaign.status:
+            console.print(
+                f"  [yellow]~ Update Campaign Status:[/yellow] {remote_campaign['status']} -> [green]{campaign.status}[/green]"
+            )
 
         remote_ad_sets = remote_campaign.get("ad_sets", {})
         remote_by_id, remote_by_name = build_ad_set_lookup(remote_ad_sets)

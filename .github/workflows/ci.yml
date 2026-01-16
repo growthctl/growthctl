@@ -36,3 +36,13 @@ jobs:
 
       - name: Smoke Test (CLI Help)
         run: uv run growthctl --help
+
+      - name: Run Tests
+        run: uv run pytest --cov=growthctl --cov-report=xml --cov-report=term
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage.xml
+          fail_ci_if_error: false

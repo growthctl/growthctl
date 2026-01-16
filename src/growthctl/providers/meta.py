@@ -360,6 +360,18 @@ class MetaProvider(MarketingProvider):
             return False
         real_c_id = fb_campaign[FbCampaign.Field.id]
 
+        if fb_campaign[FbCampaign.Field.status] != campaign_data["status"]:
+            self.console.print(
+                f"   [bold blue][Meta][/bold blue] Updating Campaign Status: {fb_campaign[FbCampaign.Field.status]} -> {campaign_data['status']}"
+            )
+            try:
+                fb_campaign[FbCampaign.Field.status] = campaign_data["status"]
+                fb_campaign.remote_update()
+            except FacebookRequestError as e:
+                self.console.print(
+                    f"      [red][Error][/red] Failed to update campaign status: {e}"
+                )
+
         self.console.print(
             f"   [bold blue][Meta][/bold blue] Syncing AdSets for Campaign: {campaign_id} ({real_c_id})..."
         )
