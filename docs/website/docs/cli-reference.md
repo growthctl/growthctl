@@ -33,7 +33,7 @@ growthctl plan campaign.yaml
 **Output:**
 ```
 ╭─ Running Plan for campaign.yaml ─╮
-Checking Campaign: Summer Sale 2025
+Checking Campaign: Summer Sale 2026
   ~ Update AdSet: US Audience
     budget: 50.0 -> 75.0
     locations: {'US'} -> {'US', 'CA'}

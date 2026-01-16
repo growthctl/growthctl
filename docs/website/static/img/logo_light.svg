@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 60" height="60">
+  <style>
+    @font-face {
+      font-family: 'Monospace';
+      src: local('JetBrains Mono'), local('Fira Code'), local('Roboto Mono'), monospace;
+    }
+    text {
+      font-family: 'Monospace', monospace;
+      font-size: 40px;
+      font-weight: bold;
+    }
+    .cursor {
+      animation: blink 1s step-end infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+  </style>
+  
+  <!-- "growth" in Dark Gray for Light Mode -->
+  <text x="10" y="40" fill="#1A1A1A">growth</text>
+  
+  <!-- "ctl" in Darker Primary Green for Light Mode -->
+  <text x="155" y="40" fill="#2E8555">ctl</text>
+  
+  <!-- Cursor "_" in Darker Primary Green -->
+  <text x="225" y="40" fill="#2E8555" class="cursor">_</text>
+</svg>

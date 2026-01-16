@@ -1,3 +1,6 @@
+![growthctl logo](docs/website/static/img/logo_readme.svg)
+
+
 # growthctl
 
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
@@ -46,7 +49,7 @@ Define your campaign in `campaign.yaml`:
 version: "1.0"
 campaigns:
   - id: summer-sale
-    name: Summer Sale 2025
+    name: Summer Sale 2026
     objective: OUTCOME_SALES
     status: ACTIVE
     ad_sets:

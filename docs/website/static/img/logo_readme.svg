@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 80" height="80">
+  <style>
+    @font-face {
+      font-family: 'Monospace';
+      src: local('JetBrains Mono'), local('Fira Code'), local('Roboto Mono'), monospace;
+    }
+    text {
+      font-family: 'Monospace', monospace;
+      font-size: 40px;
+      font-weight: bold;
+    }
+    .cursor {
+      animation: blink 1s step-end infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+  </style>
+  
+  <!-- Background Rect for Terminal Look -->
+  <rect x="0" y="0" width="320" height="80" fill="#0D1117" rx="10" />
+  
+  <!-- "growth" in Off-White -->
+  <text x="20" y="52" fill="#E6EDF3">growth</text>
+  
+  <!-- "ctl" in Terminal Green -->
+  <text x="165" y="52" fill="#39FF14">ctl</text>
+  
+  <!-- Cursor "_" in Terminal Green -->
+  <text x="235" y="52" fill="#39FF14" class="cursor">_</text>
+</svg>

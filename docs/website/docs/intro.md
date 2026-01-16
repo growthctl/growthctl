@@ -37,8 +37,8 @@ growthctl solves these problems by treating marketing campaigns as code.
 ```yaml
 version: "1.0"
 campaigns:
-  - id: summer-sale-2025
-    name: Summer Sale 2025
+  - id: summer-sale-2026
+    name: Summer Sale 2026
     objective: OUTCOME_SALES
     status: ACTIVE
     ad_sets:

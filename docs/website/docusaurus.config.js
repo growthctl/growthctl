@@ -1,5 +1,5 @@
 // @ts-check
-import {themes as prismThemes} from 'prism-react-renderer';
+import { themes as prismThemes } from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -51,10 +51,11 @@ const config = {
         respectPrefersColorScheme: true,
       },
       navbar: {
-        title: 'growthctl',
+        title: '',
         logo: {
           alt: 'growthctl Logo',
-          src: 'img/logo.svg',
+          src: 'img/logo_light.svg',
+          srcDark: 'img/logo_dark.svg',
         },
         items: [
           {
