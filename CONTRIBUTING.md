@@ -56,15 +56,18 @@ npm start
 
 ## Release Process
 
-To release a new version of `growthctl` to PyPI:
+We use a "Click-to-Release" workflow powered by GitHub Actions.
 
-1. **Bump Version**: Update the version number in `pyproject.toml`.
-2. **Update Lockfile**: Run `uv lock` to synchronize the lockfile.
-3. **Commit Changes**: Commit the version bump (e.g., `chore: bump version to 0.1.1`).
-4. **Push & Tag**:
-   ```bash
-   git push
-   git tag v0.1.1
-   git push origin v0.1.1
-   ```
-   *Note: The GitHub Action will only trigger on tags matching `v*` (e.g., `v0.1.1`). It will NOT trigger on branch pushes.*
+1. Go to the **[Actions](https://github.com/growthctl/growthctl/actions)** tab in the repository.
+2. Select the **Release** workflow on the left sidebar.
+3. Click **Run workflow**.
+4. Enter the new version number (e.g., `0.1.2`).
+5. Click **Run workflow**.
+
+The automated system will:
+- Bump the version in `pyproject.toml`
+- Update the lockfile
+- Commit and tag the release
+- Build and publish to PyPI
+- Push the new commit and tag back to the `main` branch
+

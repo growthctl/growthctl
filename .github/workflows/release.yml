@@ -1,0 +1,59 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'New version number (e.g., 0.1.2)'
+        required: true
+        type: string
+
+jobs:
+  release:
+    name: Cut Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Bump Version
+        run: |
+          # Update version in pyproject.toml
+          sed -i 's/^version = ".*"/version = "${{ inputs.version }}"/' pyproject.toml
+          
+          # Sync lockfile
+          uv lock
+
+      - name: Commit and Tag
+        run: |
+          git add pyproject.toml uv.lock
+          git commit -m "chore: release v${{ inputs.version }}"
+          git tag v${{ inputs.version }}
+
+      - name: Build package
+        run: uv build
+
+      - name: Publish to PyPI
+        run: uv publish
+        env:
+          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}
+
+      - name: Push changes
+        run: |
+          git push origin main
+          git push origin v${{ inputs.version }}
