@@ -10,6 +10,8 @@ sidebar_position: 1
 
 **growthctl** is a CLI tool that brings Infrastructure-as-Code principles to marketing campaign management. Define your ad campaigns in YAML, version control them, and deploy with confidence.
 
+![growthctl demo](/img/terminal-demo.svg)
+
 :::info
 This project is currently in **active development**. APIs and configuration schemas are subject to change.
 :::

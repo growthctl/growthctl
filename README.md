@@ -14,6 +14,8 @@
 
 Plan and apply campaign changes safely with Terraform-style dry runs. Version control your ad strategy and collaborate using standard Git workflows. Manage Meta (Facebook/Instagram) ads with built-in provider support.
 
+![growthctl demo](docs/website/static/img/terminal-demo.svg)
+
 ## Table of Contents
 
 - [Install](#install)

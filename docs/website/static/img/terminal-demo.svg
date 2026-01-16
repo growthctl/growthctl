@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="700" viewBox="0 0 800 700">
+  <style>
+    .text { font-family: 'Menlo', 'Monaco', 'Courier New', monospace; font-size: 14px; }
+    .cursor { animation: blink 1s step-end infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+  </style>
+  <rect x="0" y="0" width="800" height="700" rx="10" ry="10" fill="#1e1e1e" />
+  
+  <!-- Window Controls -->
+  <circle cx="20" cy="20" r="6" fill="#ff5f56" />
+  <circle cx="40" cy="20" r="6" fill="#ffbd2e" />
+  <circle cx="60" cy="20" r="6" fill="#27c93f" />
+  
+  <g transform="translate(20, 50)">
+<text x="0" y="0" fill="#d4d4d4" class="text" xml:space="preserve">$ cat campaign.yaml</text>
+<text x="0" y="20" fill="#ce9178" class="text" xml:space="preserve">version: &quot;1.0&quot;</text>
+<text x="0" y="40" fill="#9cdcfe" class="text" xml:space="preserve">campaigns:</text>
+<text x="0" y="60" fill="#9cdcfe" class="text" xml:space="preserve">  - id: summer-sale</text>
+<text x="0" y="80" fill="#ce9178" class="text" xml:space="preserve">    name: Summer Sale 2026</text>
+<text x="0" y="100" fill="#ce9178" class="text" xml:space="preserve">    objective: OUTCOME_SALES</text>
+<text x="0" y="120" fill="#ce9178" class="text" xml:space="preserve">    status: ACTIVE</text>
+<text x="0" y="140" fill="#9cdcfe" class="text" xml:space="preserve">    ad_sets:</text>
+<text x="0" y="160" fill="#9cdcfe" class="text" xml:space="preserve">      - id: us-audience</text>
+<text x="0" y="180" fill="#ce9178" class="text" xml:space="preserve">        name: US Audience</text>
+<text x="0" y="200" fill="#ce9178" class="text" xml:space="preserve">        status: ACTIVE</text>
+<text x="0" y="220" fill="#b5cea8" class="text" xml:space="preserve">        budget_daily: 5000.00</text>
+<text x="0" y="240" fill="#9cdcfe" class="text" xml:space="preserve">        targeting:</text>
+<text x="0" y="260" fill="#ce9178" class="text" xml:space="preserve">          locations: [&quot;US&quot;]</text>
+<text x="0" y="280" fill="#d4d4d4" class="text" xml:space="preserve"></text>
+<text x="0" y="300" fill="#d4d4d4" class="text" xml:space="preserve">$ growthctl plan campaign.yaml</text>
+<text x="0" y="320" fill="#569cd6" class="text" xml:space="preserve">╭──────────────────────────────────────────────────────────────────────────────╮</text>
+<text x="0" y="340" fill="#569cd6" class="text" xml:space="preserve">│ Running Plan for campaign.yaml                                               │</text>
+<text x="0" y="360" fill="#569cd6" class="text" xml:space="preserve">╰──────────────────────────────────────────────────────────────────────────────╯</text>
+<text x="0" y="380" fill="#4ec9b0" class="text" xml:space="preserve">+ Create Campaign: Summer Sale 2026 (ID: summer-sale)</text>
+<text x="0" y="400" fill="#4ec9b0" class="text" xml:space="preserve">  + Create AdSet: US Audience</text>
+<text x="0" y="420" fill="#d4d4d4" class="text" xml:space="preserve"></text>
+<text x="0" y="440" fill="#d4d4d4" class="text" xml:space="preserve">$ growthctl apply campaign.yaml</text>
+<text x="0" y="460" fill="#569cd6" class="text" xml:space="preserve">╭──────────────────────────────────────────────────────────────────────────────╮</text>
+<text x="0" y="480" fill="#569cd6" class="text" xml:space="preserve">│ Applying Plan for campaign.yaml                                              │</text>
+<text x="0" y="500" fill="#569cd6" class="text" xml:space="preserve">╰──────────────────────────────────────────────────────────────────────────────╯</text>
+<text x="0" y="520" fill="#d4d4d4" class="text" xml:space="preserve">Are you sure you want to apply these changes to the LIVE ad account? [y/N]: y</text>
+<text x="0" y="540" fill="#d4d4d4" class="text" xml:space="preserve">Creating Campaign: Summer Sale 2026...</text>
+<text x="0" y="560" fill="#4ec9b0" class="text" xml:space="preserve">[Remote] Created campaign: summer-sale with 1 ad sets</text>
+<text x="0" y="580" fill="#4ec9b0" class="text" xml:space="preserve">Apply Complete!</text>
+<text x="0" y="600" fill="#d4d4d4" class="text" xml:space="preserve"></text>
+<text x="0" y="620" fill="#d4d4d4" class="text" xml:space="preserve">$ <tspan fill="#d4d4d4" class="cursor">▋</tspan></text>
+
+  </g>
+</svg>
